@@ -79,6 +79,50 @@ DATABASES = {
     'default': env.db(),
 }
 
+# Logging
+# https://docs.djangoproject.com/en/3.1/topics/logging/
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s '
+            '[%(name)s.%(funcName)s:%(lineno)d] %(message)s',
+        },
+    },
+    'handlers': {
+        'consoleInfo': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'consoleError': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'fileDebug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': f'{BASE_DIR}/logging.log',
+            'formatter': 'verbose',
+            'encoding': 'utf8'
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['consoleInfo', 'consoleError'],
+        },
+        '': {
+            'handlers': ['fileDebug'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
