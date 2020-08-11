@@ -5,6 +5,10 @@ import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
 from typing import List
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class Item(object):
@@ -47,6 +51,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         urls = kwargs.get("urls")
         if not urls:
+            logger.error("URL should not be empty")
             raise CommandError("URL should not be empty")
         urls = urls.split(",")
         for url in urls:
@@ -72,11 +77,12 @@ class Command(BaseCommand):
                                 attribute = int(attribute)
                             setattr(article, ch.tag, attribute)
                     articles.append(article)
-                self.stdout.write(self.style.SUCCESS(
-                    f"Successfully grab items with URL: {url}"))
+                successMessage = f"Successfully grab items with URL: {url}"
+                self.stdout.write(self.style.SUCCESS(successMessage))
+                logger.info(successMessage)
                 for article in articles:
-                    self.stdout.write(self.style.SUCCESS(
-                        f"{article}"))
+                    self.stdout.write(self.style.SUCCESS(f"{article}"))
             except requests.exceptions.MissingSchema:
-                self.stderr.write(self.style.ERROR(
-                    f"Invalid URL {url}"))
+                error = f"Invalid URL: {url}"
+                self.stderr.write(self.style.ERROR(error))
+                logger.exception(error)
