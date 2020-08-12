@@ -3,3 +3,5 @@ __pycache__
 env/
 .vscode/
 *.log
+migrations/*
+!migrations/__init__.py
