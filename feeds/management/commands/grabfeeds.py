@@ -4,42 +4,11 @@ import requests
 import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
-from typing import List
 import logging
+from ...models import Item, Category
 
 
 logger = logging.getLogger(__name__)
-
-
-class Item(object):
-
-    def __init__(self, title: str = "", description: str = "",
-                 link: str = "", categories: List[str] = [],
-                 comments: str = "", pubDate: str = "", guid: int = 0):
-        self.title = title
-        self.description = description
-        self.link = link
-        self.categories = categories
-        self.comments = comments
-        self.pubDate = pubDate
-        self.guid = guid
-
-    def __repr__(self):
-        guid = categories = ""
-        if self.guid:
-            guid = str(self.guid)
-        if self.categories:
-            categories = "\n\t+ "\
-                .join(category for category in self.categories)
-            categories = f"\n\t+ {categories}"
-        return (f"Article:\n"
-                f"- Title: {self.title}\n"
-                f"- Description: {self.description}\n"
-                f"- Link: {self.link}\n"
-                f"- Categories: {categories}\n"
-                f"- Comments: {self.comments}\n"
-                f"- Published Date: {self.pubDate}\n"
-                f"- GUID: {guid}\n")
 
 
 class Command(BaseCommand):
@@ -55,7 +24,6 @@ class Command(BaseCommand):
             raise CommandError("URL should not be empty")
         urls = urls.split(",")
         for url in urls:
-            articles = []
             try:
                 url = urlparse(url).geturl()
                 response = requests.get(url)
@@ -63,25 +31,35 @@ class Command(BaseCommand):
                 for item in root.findall("./channel/item"):
                     article = Item()
                     for ch in item.getchildren():
-                        if ch.tag == "category":
+                        tag = ch.tag
+                        if tag == "category":
+                            article.save()
                             categories = ch.text.split("/")
-                            setattr(article, "categories", categories)
+                            for title in categories:
+                                category, created = Category.objects.get_or_create(
+                                    title=title)
+                                if created:
+                                    successMessage = (f"Successfully create category "
+                                                      f"{category} with URL: {url}")
+                                    self.stdout.write(
+                                        self.style.SUCCESS(successMessage))
+                                    logger.info(successMessage)
+                                article.categories.add(category)
                         else:
-                            attribute = ch.text
-                            if ch.tag == "description":
-                                attribute = html.escape(ch.text)
-                            elif ch.tag == "pubDate":
-                                attribute = datetime.strptime(
-                                    attribute, "%a, %d %b %Y %H:%M:%S %z")
-                            elif ch.tag == "guid":
-                                attribute = int(attribute)
-                            setattr(article, ch.tag, attribute)
-                    articles.append(article)
+                            if tag == "description":
+                                article.description = html.escape(ch.text)
+                            elif tag == "pubDate":
+                                article.pub_date = datetime.strptime(
+                                    ch.text, "%a, %d %b %Y %H:%M:%S %z")
+                            elif tag == "guid":
+                                article.guid = int(ch.text)
+                            else:
+                                setattr(article, tag, ch.text)
+                    article.save()
+                    self.stdout.write(self.style.SUCCESS(f"{article}"))
                 successMessage = f"Successfully grab items with URL: {url}"
                 self.stdout.write(self.style.SUCCESS(successMessage))
                 logger.info(successMessage)
-                for article in articles:
-                    self.stdout.write(self.style.SUCCESS(f"{article}"))
             except requests.exceptions.MissingSchema:
                 error = f"Invalid URL: {url}"
                 self.stderr.write(self.style.ERROR(error))
