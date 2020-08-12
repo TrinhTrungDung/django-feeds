@@ -62,6 +62,14 @@ LIST_PER_PAGE=10
 
 In order to make any operations manually to items and categories, you can use the super user credentials to login the admin site `http://localhost:8000/admin` on your local machine and make actions. You can also search the items based on category title by using the search bar inside the `Items` navigation menu item.
 
+### 4. Run Unit Tests
+
+In order to run unit tests, you can use the following command:
+
+```
+./scripts/compose.sh run web python manage.py test feeds
+```
+
 ## Troubleshooting
 
 If you are facing any problems while running any scripts, for example a permission error, you can easily grant the permission for the script by typing the following command:

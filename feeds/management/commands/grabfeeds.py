@@ -39,11 +39,11 @@ class Command(BaseCommand):
                                 category, created = Category.objects.get_or_create(
                                     title=title)
                                 if created:
-                                    successMessage = (f"Successfully create category "
-                                                      f"{category} with URL: {url}")
+                                    success_message = (f"Successfully create category "
+                                                       f"{category} with URL: {url}")
                                     self.stdout.write(
-                                        self.style.SUCCESS(successMessage))
-                                    logger.info(successMessage)
+                                        self.style.SUCCESS(success_message))
+                                    logger.info(success_message)
                                 article.categories.add(category)
                         else:
                             if tag == "description":
@@ -57,10 +57,14 @@ class Command(BaseCommand):
                                 setattr(article, tag, ch.text)
                     article.save()
                     self.stdout.write(self.style.SUCCESS(f"{article}"))
-                successMessage = f"Successfully grab items with URL: {url}"
-                self.stdout.write(self.style.SUCCESS(successMessage))
-                logger.info(successMessage)
+                success_message = f"Successfully grab items with URL: {url}"
+                self.stdout.write(self.style.SUCCESS(success_message))
+                logger.info(success_message)
             except requests.exceptions.MissingSchema:
                 error = f"Invalid URL: {url}"
+                self.stderr.write(self.style.ERROR(error))
+                logger.exception(error)
+            except ET.ParseError:
+                error = f"Cannot parse the URL: {url}"
                 self.stderr.write(self.style.ERROR(error))
                 logger.exception(error)
