@@ -7,6 +7,7 @@ You must first create a dotenv file `.env` in the project directory, the file sh
 ```
 DJANGO_SECRET=<django_secret_key>
 DEBUG=True
+LIST_PER_PAGE=10
 POSTGRES_DB=<postgres_db>
 POSTGRES_USER=<postgres_user>
 POSTGRES_PASSWORD=<postgres_password>
@@ -18,6 +19,14 @@ Either type each commands respectively in the `startserver.sh` file in the scrip
 ```
 ./scripts/startserver.sh
 ```
+
+After that, you need to create a super user account to access admin dashboard by following command:
+
+```
+./scripts/compose.sh run web python manage.py createsuperuser
+```
+
+Just follow the instruction to create your own super user credentials.
 
 That's it, you can check the server up and running in your local machine.
 
@@ -40,6 +49,18 @@ In order to grab all items from given feed URLs, you can use the following comma
 ```
 
 Note: The urls must be separated by a comma, the items will then be printed on the terminal.
+
+### 2. Configure pagination value
+
+You can easily configure the pagination value by adding the following variable in your `.env` file:
+
+```
+LIST_PER_PAGE=10
+```
+
+### 3. Items/Categories CRUD
+
+In order to make any operations manually to items and categories, you can use the super user credentials to login the admin site `http://localhost:8000/admin` on your local machine and make actions. You can also search the items based on category title by using the search bar inside the `Items` navigation menu item.
 
 ## Troubleshooting
 

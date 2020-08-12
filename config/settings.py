@@ -69,6 +69,8 @@ TEMPLATES = [
     },
 ]
 
+LIST_PER_PAGE = int(env("LIST_PER_PAGE"))
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
