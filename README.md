@@ -60,7 +60,13 @@ LIST_PER_PAGE=10
 
 ### 3. Items/Categories CRUD
 
-In order to make any operations manually to items and categories, you can use the super user credentials to login the admin site `http://localhost:8000/admin` on your local machine and make actions. You can also search the items based on category title by using the search bar inside the `Items` navigation menu item.
+## a. Through web browser
+
+In order to make any operations manually to items, you can use the site `http://localhost:8000/feeds/` on your local machine and make actions. You can filter the feeds by adding query parameter into the url. For example, if you want to see feeds from category 'Software', then you can use the url: `http://localhost:8000/feeds/?category=Software`.
+
+## b. Through API
+
+You can also make actions using API endpoints, the base endpoint is `http://localhost:8000/api/`. All the actions with feeds are exposed with endpoint `http://localhost:8000/api/feeds/`. Of course, you can filter the feeds the same way the web browser does by adding query parameter 'category'. Don't forget to add trailing slash while calling API endpoints.
 
 ### 4. Run Unit Tests
 

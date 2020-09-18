@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <style>
+      table {
+        width: 100%;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Items</h1>
+    <div>
+      <a href="{% url 'feeds:add' %}">
+        <button>New</button>
+      </a>
+    </div>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Categories</th>
+            <th>Link</th>
+            <th>Comments Link</th>
+            <th>Published Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <th>{{ item.title }}</th>
+            <th>{{ item.description|safe }}</th>
+            <th>
+              {% for category in item.categories.all %}
+                {{ category.title }}
+              {% empty %}
+                No category
+              {% endfor %}
+            </th>
+            <th>{{ item.link }}</th>
+            <th>{{ item.comments }}</th>
+            <th>{{ item.pub_date }}</th>
+            <th>
+              <a href="{% url 'feeds:edit' item_id=item.id %}">
+                <i style="font-size: 24px" class="fa">&#xf05a;</i>
+              </a>
+              &nbsp;
+              <a href="{% url 'feeds:delete' item_id=item.id %}">
+                <i style="font-size: 24px" class="fa fa-trash"></i>
+              </a>
+            </th>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <div class="prev_next">
+        {% if items.has_previous %}
+        <a href="?page=1">&laquo; First</a>
+        <a class="prev btn btn-info" href="?page={{items.previous_page_number}}"
+          >Prev</a
+        >
+        {% endif %}
+
+        <span class="current">
+          Page {{ items.number }} of {{ items.paginator.num_pages }}.
+        </span>
+
+        {% if items.has_next %}
+        <a class="next btn btn-info" href="?page={{items.next_page_number}}"
+          >Next</a
+        >
+        <a href="?page={{ items.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

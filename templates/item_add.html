@@ -1,0 +1,21 @@
+<html>
+  <head> </head>
+  <body>
+    <h2>New item</h2>
+    <div>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+          {% for field in form %}
+          <tr>
+            <td>{{field.label}}</td>
+            <td>{{field}}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        <input type="hidden" name="next" value="{{ request.GET.next }}" />
+        <input type="submit" value="Save" />
+      </form>
+    </div>
+  </body>
+</html>
